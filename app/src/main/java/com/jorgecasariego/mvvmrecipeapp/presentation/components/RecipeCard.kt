@@ -9,11 +9,16 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.imageResource
 import androidx.compose.ui.unit.dp
 import com.jorgecasariego.mvvmrecipeapp.R
 import com.jorgecasariego.mvvmrecipeapp.domain.model.Recipe
+import com.jorgecasariego.mvvmrecipeapp.util.loadPicture
+
+const val  DEFAULT_RECIPE_IMAGE = R.drawable.empty_plate
+
 
 @Composable
 fun RecipeCard(
@@ -24,7 +29,9 @@ fun RecipeCard(
         shape = MaterialTheme.shapes.small,
         modifier = Modifier.padding(
             bottom = 6.dp,
-            top = 6.dp
+            top = 6.dp,
+            start = 6.dp,
+            end = 6.dp
         )
             .fillMaxWidth()
             .clickable(onClick = onClick),
@@ -32,14 +39,20 @@ fun RecipeCard(
     ) {
         Column {
             recipe.featuredImage?.let { url ->
-                Image(
-                    bitmap = imageResource(id = R.drawable.empty_plate),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .preferredHeight(225.dp),
-                    contentScale = ContentScale.Crop
-                )
+                recipe.featuredImage?.let { url ->
+                    val image = loadPicture(url = url, defaultImage = DEFAULT_RECIPE_IMAGE).value
+                    image?.let { img ->
+                        Image(
+                            bitmap = img.asImageBitmap(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .preferredHeight(225.dp),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                }
             }
+
             recipe.title?.let { title ->
                 Row(
                     modifier = Modifier.fillMaxWidth()
