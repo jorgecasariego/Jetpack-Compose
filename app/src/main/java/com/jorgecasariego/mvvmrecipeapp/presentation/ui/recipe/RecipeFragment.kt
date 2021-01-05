@@ -22,8 +22,6 @@ class RecipeFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        println("Recipe Fragment: $viewModel")
     }
 
     override fun onCreateView(

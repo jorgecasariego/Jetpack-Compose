@@ -1,4 +1,4 @@
-package com.jorgecasariego.mvvmrecipeapp.respository
+package com.jorgecasariego.mvvmrecipeapp.repository
 
 import com.jorgecasariego.mvvmrecipeapp.domain.model.Recipe
 
