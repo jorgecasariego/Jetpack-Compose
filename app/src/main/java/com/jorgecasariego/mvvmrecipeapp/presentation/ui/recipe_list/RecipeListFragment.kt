@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.ScrollableRow
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
@@ -14,6 +15,7 @@ import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
@@ -25,6 +27,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.jorgecasariego.mvvmrecipeapp.R
+import com.jorgecasariego.mvvmrecipeapp.presentation.components.FoodCategoryChip
 import com.jorgecasariego.mvvmrecipeapp.presentation.components.RecipeCard
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -50,35 +53,48 @@ class RecipeListFragment : Fragment() {
                 Column {
                     Surface(
                         modifier = Modifier.fillMaxWidth(),
-                        color = MaterialTheme.colors.primary,
+                        color = Color.White,
                         elevation = 8.dp
                     ) {
-                        Row(modifier = Modifier.fillMaxWidth()) {
-                            TextField(
-                                modifier = Modifier.fillMaxWidth(0.9f).padding(8.dp),
-                                value = query,
-                                onValueChange = { newValue ->
-                                    viewModel.onQueryChanged(newValue)
-                                },
-                                label = {
-                                    Text(text = "Search")
-                                },
-                                keyboardOptions = KeyboardOptions(
-                                    keyboardType = KeyboardType.Text,
-                                    imeAction = ImeAction.Search
-                                ),
-                                leadingIcon = {
-                                    Icon(Icons.Filled.Search)
-                                },
-                                onImeActionPerformed = { action, softKeyboardController ->
-                                    if (action == ImeAction.Search) {
-                                        viewModel.newSearch(query = query)
-                                        softKeyboardController?.hideSoftwareKeyboard()
-                                    }
-                                },
-                                textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
-                                backgroundColor = MaterialTheme.colors.surface,
-                            )
+                        Column {
+                            Row(modifier = Modifier.fillMaxWidth()) {
+                                TextField(
+                                    modifier = Modifier.fillMaxWidth(0.9f).padding(8.dp),
+                                    value = query,
+                                    onValueChange = { newValue ->
+                                        viewModel.onQueryChanged(newValue)
+                                    },
+                                    label = {
+                                        Text(text = "Search")
+                                    },
+                                    keyboardOptions = KeyboardOptions(
+                                        keyboardType = KeyboardType.Text,
+                                        imeAction = ImeAction.Search
+                                    ),
+                                    leadingIcon = {
+                                        Icon(Icons.Filled.Search)
+                                    },
+                                    onImeActionPerformed = { action, softKeyboardController ->
+                                        if (action == ImeAction.Search) {
+                                            viewModel.newSearch(query = query)
+                                            softKeyboardController?.hideSoftwareKeyboard()
+                                        }
+                                    },
+                                    textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
+                                    backgroundColor = MaterialTheme.colors.surface,
+                                )
+                            }
+                            ScrollableRow(modifier = Modifier.fillMaxWidth()) {
+                                for(category in getAllFoodCategories()) {
+                                    FoodCategoryChip(
+                                        category = category.value,
+                                        onExecuteSearch = {
+                                            viewModel.onQueryChanged(it)
+                                            viewModel.newSearch(it)
+                                        }
+                                    )
+                                }
+                            }
                         }
                     }
                     LazyColumn {
