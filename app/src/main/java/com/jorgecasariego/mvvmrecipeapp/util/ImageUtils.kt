@@ -10,7 +10,9 @@ import androidx.compose.ui.platform.AmbientContext
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 
+@ExperimentalCoroutinesApi
 @Composable
 fun loadPicture(url: String, @DrawableRes defaultImage: Int): MutableState<Bitmap?> {
     val bitmapState: MutableState<Bitmap?> = mutableStateOf(null)
@@ -30,6 +32,26 @@ fun loadPicture(url: String, @DrawableRes defaultImage: Int): MutableState<Bitma
     Glide.with(AmbientContext.current)
         .asBitmap()
         .load(url)
+        .into(object: CustomTarget<Bitmap>() {
+            override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                bitmapState.value = resource
+            }
+
+            override fun onLoadCleared(placeholder: Drawable?) {}
+
+        })
+
+    return bitmapState
+}
+
+@ExperimentalCoroutinesApi
+@Composable
+fun loadPicture(@DrawableRes drawable: Int): MutableState<Bitmap?> {
+    val bitmapState: MutableState<Bitmap?> = mutableStateOf(null)
+
+    Glide.with(AmbientContext.current)
+        .asBitmap()
+        .load(drawable)
         .into(object: CustomTarget<Bitmap>() {
             override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
                 bitmapState.value = resource
