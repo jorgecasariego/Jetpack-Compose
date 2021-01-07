@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.ScrollableRow
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.lazy.LazyColumn
@@ -14,9 +15,12 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush.Companion.linearGradient
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.TextStyle
@@ -69,7 +73,7 @@ class RecipeListFragment : Fragment() {
 
                     //PulsingDemo()
 
-                    Row(
+                    /*Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp)
@@ -84,23 +88,48 @@ class RecipeListFragment : Fragment() {
                             onToggle = {
                                 state.value = if (state.value == IDLE) ACTIVE else IDLE
                             })
-                    }
+                    }*/
 
 
-                    /*Box(modifier = Modifier.fillMaxSize()) {
-                        CircularIndeterminateProgressBar(isDisplayed = true)
 
-                        LazyColumn {
-                            itemsIndexed(
-                                items = recipes
-                            ) { index, recipe ->
-                                RecipeCard(recipe = recipe, onClick = {})
+                    Box(modifier = Modifier.fillMaxSize()) {
+                        if (loading) {
+                            LoadingRecipeListShimmer(imageHeight = 250.dp)
+                        } else {
+                            LazyColumn {
+                                itemsIndexed(
+                                    items = recipes
+                                ) { index, recipe ->
+                                    RecipeCard(recipe = recipe, onClick = {})
+                                }
                             }
                         }
-
-                    }*/
+                        CircularIndeterminateProgressBar(isDisplayed = loading, verticalBias = 0.3f)
+                    }
                 }
             }
         }
     }
+}
+@Composable
+fun GradientDemo() {
+    val colors = listOf(
+        Color.LightGray,
+        Color.White,
+        Color.LightGray,
+    )
+
+    val brush = linearGradient(
+        colors,
+        start = Offset(200f, 200f),
+        end = Offset(400f, 400f)
+    )
+    Surface(shape = MaterialTheme.shapes.small) {
+        Spacer(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(brush = brush)
+        )
+    }
+
 }
