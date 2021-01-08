@@ -1,5 +1,6 @@
 package com.jorgecasariego.mvvmrecipeapp.presentation.ui.recipe_list
 
+import android.app.Application
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -33,12 +34,18 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.findNavController
 import com.jorgecasariego.mvvmrecipeapp.R
+import com.jorgecasariego.mvvmrecipeapp.presentation.BaseApplication
 import com.jorgecasariego.mvvmrecipeapp.presentation.components.*
 import com.jorgecasariego.mvvmrecipeapp.presentation.components.HeartAnimationDefinition.HeartButtonState.*
+import com.jorgecasariego.mvvmrecipeapp.presentation.theme.AppTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class RecipeListFragment : Fragment() {
+
+    @Inject
+    lateinit var application: BaseApplication
 
     val viewModel: RecipeListViewModel by viewModels()
 
@@ -51,60 +58,69 @@ class RecipeListFragment : Fragment() {
         return ComposeView(requireContext()).apply {
             setContent {
 
-                val recipes = viewModel.recipes.value
+                AppTheme(darkTheme = application.isDark.value) {
+                    val recipes = viewModel.recipes.value
 
-                // Remember
-                val query = viewModel.query.value
+                    // Remember
+                    val query = viewModel.query.value
 
-                val selectedCategory = viewModel.selectedCategory.value
+                    val selectedCategory = viewModel.selectedCategory.value
 
-                val loading = viewModel.loading.value
+                    val loading = viewModel.loading.value
 
-                Column {
-                    SearchAppBar(
-                        query = query,
-                        onQueryChanged = viewModel::onQueryChanged,
-                        onExecuteSearch = viewModel::newSearch,
-                        scrollPosition = viewModel.categoryScrollPosition,
-                        selectedCategory = selectedCategory,
-                        onSelectedCategoryChanged = viewModel::onSelectedCategoryChanged,
-                        onChangeCategoryScrollPosition = viewModel::onChangeCategoryScrollPosition
-                    )
+                    Column {
+                        SearchAppBar(
+                            query = query,
+                            onQueryChanged = viewModel::onQueryChanged,
+                            onExecuteSearch = viewModel::newSearch,
+                            scrollPosition = viewModel.categoryScrollPosition,
+                            selectedCategory = selectedCategory,
+                            onSelectedCategoryChanged = viewModel::onSelectedCategoryChanged,
+                            onChangeCategoryScrollPosition = viewModel::onChangeCategoryScrollPosition,
+                            onToggleTheme = {
+                                application.toggleLightTheme()
+                            }
+                        )
 
-                    //PulsingDemo()
+                        //PulsingDemo()
 
-                    /*Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(200.dp)
-                            .padding(top = 20.dp),
-                        horizontalArrangement = Arrangement.Center) {
+                        /*Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(200.dp)
+                                .padding(top = 20.dp),
+                            horizontalArrangement = Arrangement.Center) {
 
-                        // It is better to do this state in the ViewModel
-                        val state = remember { mutableStateOf(IDLE)}
-                        AnimationHeartButton(
-                            modifier = Modifier,
-                            buttonState = state,
-                            onToggle = {
-                                state.value = if (state.value == IDLE) ACTIVE else IDLE
-                            })
-                    }*/
+                            // It is better to do this state in the ViewModel
+                            val state = remember { mutableStateOf(IDLE)}
+                            AnimationHeartButton(
+                                modifier = Modifier,
+                                buttonState = state,
+                                onToggle = {
+                                    state.value = if (state.value == IDLE) ACTIVE else IDLE
+                                })
+                        }*/
 
 
 
-                    Box(modifier = Modifier.fillMaxSize()) {
-                        if (loading) {
-                            LoadingRecipeListShimmer(imageHeight = 250.dp)
-                        } else {
-                            LazyColumn {
-                                itemsIndexed(
-                                    items = recipes
-                                ) { index, recipe ->
-                                    RecipeCard(recipe = recipe, onClick = {})
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(color = MaterialTheme.colors.background)
+                        ) {
+                            if (loading) {
+                                LoadingRecipeListShimmer(imageHeight = 250.dp)
+                            } else {
+                                LazyColumn {
+                                    itemsIndexed(
+                                        items = recipes
+                                    ) { index, recipe ->
+                                        RecipeCard(recipe = recipe, onClick = {})
+                                    }
                                 }
                             }
+                            CircularIndeterminateProgressBar(isDisplayed = loading, verticalBias = 0.3f)
                         }
-                        CircularIndeterminateProgressBar(isDisplayed = loading, verticalBias = 0.3f)
                     }
                 }
             }
