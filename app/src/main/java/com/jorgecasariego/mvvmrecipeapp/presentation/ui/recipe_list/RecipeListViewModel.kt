@@ -1,5 +1,6 @@
 package com.jorgecasariego.mvvmrecipeapp.presentation.ui.recipe_list
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.hilt.lifecycle.ViewModelInject
@@ -13,6 +14,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Named
 
+const val PAGE_SIZE = 30
+
 class RecipeListViewModel
 @ViewModelInject
 constructor(
@@ -25,6 +28,8 @@ constructor(
     val selectedCategory: MutableState<FoodCategory?> = mutableStateOf(null)
     var categoryScrollPosition: Float = 0F
     val loading = mutableStateOf(false)
+    val page = mutableStateOf(1)
+    var recipeListScrollPosition = 0
 
     init {
         newSearch()
@@ -50,6 +55,49 @@ constructor(
         }
     }
 
+    fun nextPage() {
+        viewModelScope.launch {
+            // prevent duplicate events due to recompose happening to quickly
+            if ((recipeListScrollPosition + 1) >= (page.value * PAGE_SIZE)) {
+                loading.value = true
+                incrementPage()
+                //Log.d("TEST", "nextPage: triggered: ${page.value}")
+
+                //jus to show pagination, api is fast
+                delay(1000)
+
+                if (page.value > 1) {
+                    val result = repository.search(
+                        token = token,
+                        page = page.value,
+                        query = query.value
+                    )
+                    //Log.d("TEST", "nextPage: $result")
+                    appendRecipes(result)
+                }
+
+                loading.value = false
+            }
+        }
+    }
+
+    /**
+     * Append new recipes to the current list of recipes
+     */
+    private fun appendRecipes(recipe: List<Recipe>) {
+        val current = ArrayList(this.recipes.value)
+        current.addAll(recipe)
+        this.recipes.value = current
+    }
+
+    private fun incrementPage() {
+        page.value = page.value + 1
+    }
+
+    fun onChangeScrollPostion(position: Int) {
+        recipeListScrollPosition = position
+    }
+
     fun onQueryChanged(query: String) {
         this.query.value = query
     }
@@ -68,8 +116,15 @@ constructor(
         selectedCategory.value = null
     }
 
+    fun onChangeRecipeScrollPosition(position: Int) {
+        Log.d("TEST", "onChangeRecipeScrollPosition: $position")
+        recipeListScrollPosition = position
+    }
+
     private fun resetSearchState() {
         recipes.value = listOf()
+        page.value = 1
+        onChangeRecipeScrollPosition(0)
         if (selectedCategory.value?.value != query.value) {
             clearSelectedCategory()
         }
