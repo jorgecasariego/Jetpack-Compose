@@ -59,7 +59,7 @@ fun SearchAppBar(
                             softKeyboardController?.hideSoftwareKeyboard()
                         }
                     },
-                    textStyle = MaterialTheme.typography.button,
+                    textStyle = TextStyle(color = MaterialTheme.colors.onSurface),
                     backgroundColor = MaterialTheme.colors.surface,
                 )
 

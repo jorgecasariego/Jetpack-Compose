@@ -10,4 +10,7 @@ sealed class RecipeListEvent {
     object NewSearchEvent: RecipeListEvent()
 
     object NextPageEvent: RecipeListEvent()
+
+    // Restore after process death
+    object RestoreStateEvent: RecipeListEvent()
 }

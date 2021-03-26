@@ -122,7 +122,6 @@ class RecipeListFragment : Fragment() {
                     ) {
                         Box(
                             modifier = Modifier
-                                .fillMaxSize()
                                 .background(color = MaterialTheme.colors.surface)
                         ) {
                             if (loading && recipes.isEmpty()) {
