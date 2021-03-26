@@ -43,6 +43,7 @@ import com.jorgecasariego.mvvmrecipeapp.presentation.components.*
 import com.jorgecasariego.mvvmrecipeapp.presentation.components.HeartAnimationDefinition.HeartButtonState.*
 import com.jorgecasariego.mvvmrecipeapp.presentation.components.util.SnackbarController
 import com.jorgecasariego.mvvmrecipeapp.presentation.theme.AppTheme
+import com.jorgecasariego.mvvmrecipeapp.presentation.ui.recipe_list.RecipeListEvent.*
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -96,7 +97,7 @@ class RecipeListFragment : Fragment() {
                                             )
                                         }
                                     } else {
-                                        viewModel.newSearch()
+                                        viewModel.onTriggerEvent(NewSearchEvent)
                                     }
                                 },
                                 scrollPosition = viewModel.categoryScrollPosition,
@@ -133,7 +134,7 @@ class RecipeListFragment : Fragment() {
                                     ) { index, recipe ->
                                         viewModel.onChangeRecipeScrollPosition(index)
                                         if ((index + 1) >= page * PAGE_SIZE && !loading) {
-                                            viewModel.nextPage()
+                                            viewModel.onTriggerEvent(NextPageEvent)
                                         }
                                         RecipeCard(recipe = recipe, onClick = {})
                                     }
