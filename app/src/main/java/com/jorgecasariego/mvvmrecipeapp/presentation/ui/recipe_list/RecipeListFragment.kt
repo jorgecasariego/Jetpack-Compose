@@ -109,76 +109,30 @@ class RecipeListFragment : Fragment() {
                                 }
                             )
                         },
-                        /*bottomBar = {
-                            MyBottomBar()
-                        },
-                        drawerContent = {
-                            MyDrawer()
-                        },*/
                         scaffoldState = scaffoldState,
                         snackbarHost = {
                             scaffoldState.snackbarHostState
                         }
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .background(color = MaterialTheme.colors.surface)
-                        ) {
-                            if (loading && recipes.isEmpty()) {
-                                LoadingRecipeListShimmer(imageHeight = 250.dp)
-                            } else {
-                                LazyColumn {
-                                    itemsIndexed(
-                                        items = recipes
-                                    ) { index, recipe ->
-                                        viewModel.onChangeRecipeScrollPosition(index)
-                                        if ((index + 1) >= page * PAGE_SIZE && !loading) {
-                                            viewModel.onTriggerEvent(NextPageEvent)
-                                        }
-                                        RecipeCard(recipe = recipe, onClick = {})
-                                    }
-                                }
-                            }
-                            CircularIndeterminateProgressBar(
-                                isDisplayed = loading,
-                                verticalBias = 0.3f
-                            )
-
-                            DefaultSnackbar(
-                                snackbarHostState = scaffoldState.snackbarHostState,
-                                onDismiss = { scaffoldState.snackbarHostState.currentSnackbarData?.dismiss() },
-                                modifier = Modifier.align(Alignment.BottomCenter)
-                            )
-                        }
+                        RecipeList(
+                            loading = loading ,
+                            recipes = recipes,
+                            onChangeRecipeScrollPosition = viewModel::onChangeRecipeScrollPosition,
+                            page = page,
+                            onNextPage = {
+                                viewModel.onTriggerEvent(NextPageEvent)
+                            },
+                            scaffoldState = scaffoldState,
+                            snackbarController = snackbarController,
+                            navController = findNavController()
+                        )
                     }
-
-                    /*Column {
-
-                        //PulsingDemo()
-
-                        /*Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(200.dp)
-                                .padding(top = 20.dp),
-                            horizontalArrangement = Arrangement.Center) {
-
-                            // It is better to do this state in the ViewModel
-                            val state = remember { mutableStateOf(IDLE)}
-                            AnimationHeartButton(
-                                modifier = Modifier,
-                                buttonState = state,
-                                onToggle = {
-                                    state.value = if (state.value == IDLE) ACTIVE else IDLE
-                                })
-                        }*/
-                    }*/
                 }
             }
         }
     }
 }
-
+/*
 @Composable
 fun GradientDemo() {
     val colors = listOf(
@@ -235,3 +189,4 @@ fun MyDrawer() {
 
     }
 }
+*/
